@@ -1,0 +1,43 @@
+name: Build FreeType (Windows x64 Static Library)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC and CMake
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure (CMake, static library, Release)
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build FreeType static library
+        run: |
+          cd build
+          cmake --build . --config Release --target ALL_BUILD
+
+      - name: Locate built static library
+        run: |
+          dir build\Release\*.lib
+          dir build\lib\Release\*.lib || exit 0
+
+      # Optional: Upload the static library as an artifact
+      - name: Upload static library artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: freetype-static-lib
+          path: |
+            build/Release/*.lib
+            build/lib/Release/*.lib
