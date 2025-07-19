@@ -31,7 +31,7 @@ jobs:
       - name: Locate built static library
         run: |
           dir build\Release\*.lib
-          dir build\lib\Release\*.lib || exit 0
+          dir build\Release\*.lib || exit 0
 
       # Optional: Upload the static library as an artifact
       - name: Upload static library artifact
